@@ -1,0 +1,15 @@
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+  await app.startAllMicroservices();
+  await app.listen(3000);
+  app.enableCors({
+    origin: '*', // Allows all origins
+  });
+  // app.use(bodyParser.json());
+  // app.use(bodyParser.urlencoded({ extended: true }));
+}
+bootstrap();
