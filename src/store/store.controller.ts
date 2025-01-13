@@ -27,7 +27,7 @@ export class StoreController {
   constructor() {
     this.marketplaceClient = ClientProxyFactory.create({
       transport: Transport.TCP,
-      options: { host: '0.0.0.0', port: 3001 }, // Replace with your microservice configuration
+      options: { host: '0.0.0.0', port: 3010 }, // Replace with your microservice configuration
     });
   }
 
@@ -79,40 +79,37 @@ export class StoreController {
     @Body() body: any,
     @UploadedFile() file: Express.Multer.File,
   ): Promise<any> {
-    console.log('Creating a new store');
+    console.log('Received payload from publisher service:', body);
 
-    let fileName: string | null = null;
-    let imageUrl: string | null = null;
+    // let fileName: string | null = null;
+    // let imageUrl: string | null = null;
 
-    if (file) {
-      console.log('Processing file upload...');
-      if (!Buffer.isBuffer(file.buffer)) {
-        throw new Error('Invalid file buffer');
-      }
+    // if (file) {
+    //   console.log('Processing file upload...');
+    //   if (!Buffer.isBuffer(file.buffer)) {
+    //     throw new Error('Invalid file buffer');
+    //   }
 
-      // Set the upload directory to the root-level uploads/storeLogo
-      const uploadDir = join(process.cwd(), 'uploads/storeLogo');
+    //   // Set the upload directory to the root-level uploads/storeLogo
+    //   const uploadDir = join(process.cwd(), 'uploads/storeLogo');
 
-      fileName = `store-${Date.now()}-${Math.round(Math.random() * 1e9)}${extname(file.originalname)}`;
-      const uploadPath = join(uploadDir, fileName);
+    //   fileName = `store-${Date.now()}-${Math.round(Math.random() * 1e9)}${extname(file.originalname)}`;
+    //   const uploadPath = join(uploadDir, fileName);
 
-      if (!fs.existsSync(uploadDir)) {
-        fs.mkdirSync(uploadDir, { recursive: true });
-      }
+    //   if (!fs.existsSync(uploadDir)) {
+    //     fs.mkdirSync(uploadDir, { recursive: true });
+    //   }
 
-      fs.writeFileSync(uploadPath, file.buffer);
-      console.log('File saved successfully:', uploadPath);
+    //   fs.writeFileSync(uploadPath, file.buffer);
+    //   console.log('File saved successfully:', uploadPath);
 
-      imageUrl = `/uploads/storeLogo/${fileName}`;
-    }
+    //   imageUrl = `/uploads/storeLogo/${fileName}`;
+    // }
 
-    const payload = { ...body, image_url: imageUrl };
+    // const payload = { ...body, image_url: imageUrl };
 
     return this.marketplaceClient
-      .send(
-        { service: 'marketplace', module: 'store', action: 'create' },
-        payload,
-      )
+      .send({ service: 'marketplace', module: 'store', action: 'create' }, body)
       .toPromise();
   }
 
@@ -124,37 +121,35 @@ export class StoreController {
     @UploadedFile() file?: Express.Multer.File,
   ): Promise<any> {
     console.log(`Updating store with ID: ${id}`);
+    console.log(`Update Store Data: ${body}`);
 
-    let fileName: string | null = null;
-    let imageUrl: string | null = null;
+    // let fileName: string | null = null;
+    // let imageUrl: string | null = null;
 
-    if (file) {
-      console.log('Processing file upload...');
-      if (!Buffer.isBuffer(file.buffer)) {
-        throw new Error('Invalid file buffer');
-      }
+    // if (file) {
+    //   console.log('Processing file upload...');
+    //   if (!Buffer.isBuffer(file.buffer)) {
+    //     throw new Error('Invalid file buffer');
+    //   }
 
-      fileName = `store-${Date.now()}-${Math.round(Math.random() * 1e9)}${extname(file.originalname)}`;
-      const uploadPath = join(process.cwd(), 'uploads/storeLogo', fileName);
+    //   fileName = `store-${Date.now()}-${Math.round(Math.random() * 1e9)}${extname(file.originalname)}`;
+    //   const uploadPath = join(process.cwd(), 'uploads/storeLogo', fileName);
 
-      if (!fs.existsSync(join(process.cwd(), 'uploads/storeLogo'))) {
-        fs.mkdirSync(join(process.cwd(), 'uploads/storeLogo'), {
-          recursive: true,
-        });
-      }
+    //   if (!fs.existsSync(join(process.cwd(), 'uploads/storeLogo'))) {
+    //     fs.mkdirSync(join(process.cwd(), 'uploads/storeLogo'), {
+    //       recursive: true,
+    //     });
+    //   }
 
-      fs.writeFileSync(uploadPath, file.buffer);
-      console.log('File saved successfully:', uploadPath);
-      imageUrl = `/uploads/storeLogo/${fileName}`;
-    }
+    //   fs.writeFileSync(uploadPath, file.buffer);
+    //   console.log('File saved successfully:', uploadPath);
+    //   imageUrl = `/uploads/storeLogo/${fileName}`;
+    // }
 
-    const payload = { id, ...body, image_url: imageUrl };
-
+    // const payload = { id, ...body, image_url: imageUrl };
+    // return body;
     return this.marketplaceClient
-      .send(
-        { service: 'marketplace', module: 'store', action: 'update' },
-        payload,
-      )
+      .send({ service: 'marketplace', module: 'store', action: 'update' }, body)
       .toPromise();
   }
 
