@@ -30,9 +30,111 @@ export class AuthController {
       transport: Transport.TCP,
       options: {
         host: '127.0.0.1',
-        port: 3001,
+        port: 3010,
       },
     });
+  }
+
+  @Get()
+  async getAllUsers(): Promise<any> {
+    console.log('masuk sini!');
+    const result = await firstValueFrom(
+      this.userServiceClient.send({ module: 'user', action: 'getAll' }, {}),
+    );
+    if (!result.success) {
+      throw new HttpException(
+        {
+          success: result.success || false,
+          message: result.message || 'Internal Server Error',
+          errors: result.errors || [],
+        },
+        result.statusCode || 500,
+      );
+    }
+    return result;
+  }
+
+  @Put('/soft-delete/:id')
+  async softDeleteUser(@Param('id') id: string): Promise<any> {
+    const result = await firstValueFrom(
+      this.userServiceClient.send(
+        { module: 'user', action: 'softDelete' },
+        { id },
+      ),
+    );
+
+    if (!result.success) {
+      throw new HttpException(
+        result.message || 'Internal Server Error',
+        result.statusCode || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
+    return result;
+  }
+
+  @Put('/edit/:id')
+  async editUserByAdmin(
+    @Param('id') id: string,
+    @Body() body: { name?: string; phone?: string; is_verified?: boolean },
+  ): Promise<any> {
+    const result = await firstValueFrom(
+      this.userServiceClient.send(
+        { module: 'user', action: 'updateByAdmin' },
+        { userId: id, ...body },
+      ),
+    );
+
+    if (!result.success) {
+      throw new HttpException(
+        result.message || 'Internal Server Error',
+        result.statusCode || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
+    return result;
+  }
+
+  @Post('/add-by-admin')
+  async addUserByAdmin(@Body() body: any): Promise<any> {
+    const result = await firstValueFrom(
+      this.userServiceClient.send(
+        { module: 'user', action: 'addByAdmin' },
+        body,
+      ),
+    );
+
+    if (!result.success) {
+      throw new HttpException(
+        result.message || 'Internal Server Error',
+        result.statusCode || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
+    return result;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('/edit/:id')
+  async editUser(
+    @Param('id') id: string,
+    @Body() body: { name?: string; phone?: string },
+  ): Promise<any> {
+    const result = await firstValueFrom(
+      this.userServiceClient.send(
+        { module: 'user', action: 'edit' },
+        { id, ...body },
+      ),
+    );
+
+    if (!result.success) {
+      throw new HttpException(
+        result.message || 'Internal Server Error',
+        result.statusCode || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
+    return result;
   }
 
   @Post('/register')
