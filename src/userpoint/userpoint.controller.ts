@@ -24,7 +24,7 @@ export class UserPointController {
   constructor() {
     this.userPoinServiceClient = ClientProxyFactory.create({
       transport: Transport.TCP,
-      options: { host: '127.0.0.1', port: 3001 }, // Sesuaikan konfigurasi microservice
+      options: { host: '127.0.0.1', port: 3010 }, // Sesuaikan konfigurasi microservice
     });
   }
 

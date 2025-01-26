@@ -31,13 +31,17 @@ export class GatewayErrorFilter implements ExceptionFilter {
         typeof exceptionResponse === 'string'
           ? exceptionResponse // Jika string, gunakan langsung sebagai message
           : typeof exceptionResponse === 'object' &&
+              exceptionResponse !== null && // Pastikan exceptionResponse bukan null
               'message' in exceptionResponse
             ? (exceptionResponse as any).message
             : 'An unexpected error occurred', // Jika object memiliki message, gunakan
       errors:
-        typeof exceptionResponse === 'object' && 'errors' in exceptionResponse
+        typeof exceptionResponse === 'object' &&
+        exceptionResponse !== null && // Pastikan exceptionResponse bukan null
+        'errors' in exceptionResponse
           ? (exceptionResponse as any).errors
           : [],
+
       statusCode: status,
     };
 

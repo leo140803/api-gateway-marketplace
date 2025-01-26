@@ -23,7 +23,7 @@ export class CartController {
   constructor() {
     this.cartServiceClient = ClientProxyFactory.create({
       transport: Transport.TCP,
-      options: { host: '127.0.0.1', port: 3001 }, // Sesuaikan dengan konfigurasi microservice
+      options: { host: '127.0.0.1', port: 3010 },
     });
   }
 
@@ -49,13 +49,14 @@ export class CartController {
   @Post()
   async addToCart(
     @Body('user_id') userId: string,
-    @Body('product_id') productId: string,
+    @Body('product_code_id') product_code_id: string,
     @Body('quantity') quantity: number,
   ): Promise<any> {
+    console.log('add to cart');
     const result = await firstValueFrom(
       this.cartServiceClient.send(
         { module: 'cart', action: 'addToCart' },
-        { userId, productId, quantity },
+        { userId, product_code_id, quantity },
       ),
     );
 

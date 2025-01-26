@@ -25,7 +25,7 @@ export class FollowController {
   constructor() {
     this.followServiceClient = ClientProxyFactory.create({
       transport: Transport.TCP,
-      options: { host: '127.0.0.1', port: 3001 }, // Sesuaikan host dan port microservice Anda
+      options: { host: '127.0.0.1', port: 3010 }, // Sesuaikan host dan port microservice Anda
     });
   }
 
@@ -41,7 +41,7 @@ export class FollowController {
         payload,
       ),
     );
-
+    //
     if (!result.success) {
       throw new HttpException(
         {

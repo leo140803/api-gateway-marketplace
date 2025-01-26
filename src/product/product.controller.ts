@@ -23,7 +23,7 @@ export class ProductController {
   constructor() {
     this.productServiceClient = ClientProxyFactory.create({
       transport: Transport.TCP,
-      options: { host: '127.0.0.1', port: 3001 }, // Sesuaikan dengan konfigurasi microservice
+      options: { host: '127.0.0.1', port: 3010 }, // Sesuaikan dengan konfigurasi microservice
     });
   }
 

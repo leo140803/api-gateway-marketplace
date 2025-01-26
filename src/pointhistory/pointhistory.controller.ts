@@ -23,7 +23,7 @@ export class PoinHistoryController {
   constructor() {
     this.poinHistoryServiceClient = ClientProxyFactory.create({
       transport: Transport.TCP,
-      options: { host: '127.0.0.1', port: 3001 }, // Sesuaikan dengan konfigurasi microservice
+      options: { host: '127.0.0.1', port: 3010 }, // Sesuaikan dengan konfigurasi microservice
     });
   }
 
@@ -61,6 +61,7 @@ export class PoinHistoryController {
       ),
     );
     if (!result.success) {
+      console.log(result);
       throw new HttpException(
         result.message || 'Internal Server Error',
         result.statusCode || 500,

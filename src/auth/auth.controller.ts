@@ -54,6 +54,7 @@ export class AuthController {
     return result;
   }
 
+  //DONE
   @Put('/soft-delete/:id')
   async softDeleteUser(@Param('id') id: string): Promise<any> {
     const result = await firstValueFrom(
@@ -73,6 +74,7 @@ export class AuthController {
     return result;
   }
 
+  //done
   @Put('/edit/:id')
   async editUserByAdmin(
     @Param('id') id: string,
@@ -95,6 +97,7 @@ export class AuthController {
     return result;
   }
 
+  //done
   @Post('/add-by-admin')
   async addUserByAdmin(@Body() body: any): Promise<any> {
     const result = await firstValueFrom(
@@ -137,8 +140,10 @@ export class AuthController {
     return result;
   }
 
+  //DONE
   @Post('/register')
   async register(@Body() data: any): Promise<any> {
+    console.log(data);
     const result = await firstValueFrom(
       this.userServiceClient.send({ module: 'user', action: 'register' }, data),
     );
@@ -155,6 +160,7 @@ export class AuthController {
     return result;
   }
 
+  //DONE
   @Get('/verify')
   async verifyEmail(
     @Query('token') token: string,
@@ -212,14 +218,7 @@ export class AuthController {
     return result;
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Get('/protected')
-  getProtectedData(@Req() req: any): any {
-    return {
-      message: 'Hello, World!',
-    };
-  }
-
+  //DONE
   @UseGuards(JwtAuthGuard)
   @Post('/device-token')
   async addDeviceToken(
@@ -249,7 +248,7 @@ export class AuthController {
   @Get('profile')
   async findById(@Req() req: any): Promise<any> {
     const userId = req.user.user_id;
-
+    console.log(userId);
     const result = await firstValueFrom(
       this.userServiceClient.send(
         { module: 'user', action: 'findById' },
@@ -267,17 +266,19 @@ export class AuthController {
     return result;
   }
 
+  //DONE
   @UseGuards(JwtAuthGuard)
-  @Put('/change-password')
-  async changePassword(
+  @Put('/update-details')
+  async updateDetails(
     @Req() req: any,
-    @Body() body: { oldPassword: string; newPassword: string },
+    @Body() body: { name?: string; phone?: string },
   ): Promise<any> {
+    console.log(body);
     const userId = req.user.user_id; // Ambil userId dari JWT Guard
 
     const result = await firstValueFrom(
       this.userServiceClient.send(
-        { module: 'user', action: 'updatePassword' },
+        { module: 'user', action: 'updateDetails' },
         { userId, ...body },
       ),
     );
@@ -292,17 +293,103 @@ export class AuthController {
     return result;
   }
 
+  @Post('/forgot-password')
+  async requestPasswordReset(@Body() body: { email: string }): Promise<any> {
+    const result = await firstValueFrom(
+      this.userServiceClient.send(
+        { module: 'user', action: 'requestPasswordReset' },
+        { email: body.email },
+      ),
+    );
+
+    if (!result.success) {
+      throw new HttpException(
+        result.message || 'Internal Server Error',
+        result.statusCode || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
+    return {
+      message: 'If the email is registered, a reset link will be sent.',
+      success: true,
+      statusCode: 200,
+    };
+  }
+
+  @Get('/reset-password-redirect')
+  async redirectResetPassword(
+    @Query('token') token: string,
+    @Query('email') email: string,
+    @Headers('user-agent') userAgent: string,
+    @Res() res,
+  ) {
+    try {
+      if (!token || !email) {
+        throw new HttpException(
+          'Invalid or missing parameters',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      const schemeUrl = `marketplace-logamas://reset-password?email=${email}&token=${token}`;
+      const webUrl = `https://yourwebsite.com/reset-password?email=${email}&token=${token}`;
+
+      if (
+        userAgent.toLowerCase().includes('iphone') ||
+        userAgent.toLowerCase().includes('ipad') ||
+        userAgent.toLowerCase().includes('ios')
+      ) {
+        return res.redirect(schemeUrl);
+      } else if (userAgent.toLowerCase().includes('android')) {
+        return res.redirect(schemeUrl);
+      } else {
+        return res.redirect(webUrl);
+      }
+    } catch (error) {
+      console.error('Error redirecting to app:', error.message);
+      throw new HttpException(
+        'Failed to process your request',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Post('/reset-password')
+  async resetPassword(
+    @Body() body: { token: string; newPassword: string },
+  ): Promise<any> {
+    const result = await firstValueFrom(
+      this.userServiceClient.send(
+        { module: 'user', action: 'resetPassword' },
+        body,
+      ),
+    );
+
+    if (!result.success) {
+      throw new HttpException(
+        result.message || 'Internal Server Error',
+        result.statusCode || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
+    return {
+      message: 'Password reset successfully',
+      success: true,
+      statusCode: 200,
+    };
+  }
+
   @UseGuards(JwtAuthGuard)
-  @Put('/update-details')
-  async updateDetails(
+  @Put('/change-password')
+  async changePassword(
     @Req() req: any,
-    @Body() body: { name?: string; phone?: string },
+    @Body() body: { oldPassword: string; newPassword: string },
   ): Promise<any> {
     const userId = req.user.user_id; // Ambil userId dari JWT Guard
 
     const result = await firstValueFrom(
       this.userServiceClient.send(
-        { module: 'user', action: 'updateDetails' },
+        { module: 'user', action: 'changePassword' },
         { userId, ...body },
       ),
     );
