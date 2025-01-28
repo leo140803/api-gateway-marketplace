@@ -217,7 +217,6 @@ export class VoucherController {
   async purchaseVoucher(
     @Req() req: any,
     @Param('voucherId') voucherId: string,
-    @Body('storeId') storeId: string,
   ): Promise<any> {
     console.log('yuk beli!');
     const userId = req.user.user_id;
@@ -225,7 +224,7 @@ export class VoucherController {
     const result = await firstValueFrom(
       this.voucherServiceClient.send(
         { module: 'voucher-own', action: 'purchaseVoucher' },
-        { userId, voucherId, storeId },
+        { userId, voucherId },
       ),
     );
 

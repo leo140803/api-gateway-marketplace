@@ -35,6 +35,93 @@ export class AuthController {
     });
   }
 
+  // Endpoint to send OTP to user's email
+  @Post('/send-otp')
+  async sendOtp(@Body() body: { email: string }): Promise<any> {
+    const result = await firstValueFrom(
+      this.userServiceClient.send(
+        { module: 'user', action: 'sendOtp' },
+        { email: body.email },
+      ),
+    );
+
+    if (!result.success) {
+      throw new HttpException(
+        result.message || 'Failed to send OTP',
+        result.statusCode || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
+    return {
+      message: 'OTP sent successfully',
+      success: true,
+      statusCode: 200,
+    };
+  }
+
+  // Endpoint to validate OTP
+  @Post('/validate-otp')
+  async validateOtp(
+    @Body() body: { email: string; otp: string },
+  ): Promise<any> {
+    const result = await firstValueFrom(
+      this.userServiceClient.send(
+        { module: 'user', action: 'validateOtp' },
+        { email: body.email, otp: body.otp },
+      ),
+    );
+
+    if (!result.success) {
+      throw new HttpException(
+        result.message || 'Invalid OTP',
+        result.statusCode || HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    return {
+      message: 'OTP validated successfully',
+      success: true,
+      statusCode: 200,
+    };
+  }
+
+  // Endpoint to change password using OTP
+  @Post('/change-password-with-otp-and-old-password')
+  async changePasswordWithOtpAndOldPassword(
+    @Body()
+    body: {
+      email: string;
+      oldPassword: string;
+      otp: string;
+      newPassword: string;
+    },
+  ): Promise<any> {
+    const result = await firstValueFrom(
+      this.userServiceClient.send(
+        { module: 'user', action: 'changePasswordWithOtpAndOldPassword' },
+        {
+          email: body.email,
+          oldPassword: body.oldPassword,
+          otp: body.otp,
+          newPassword: body.newPassword,
+        },
+      ),
+    );
+
+    if (!result.success) {
+      throw new HttpException(
+        result.message || 'Failed to change password',
+        result.statusCode || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
+    return {
+      message: 'Password changed successfully',
+      success: true,
+      statusCode: 200,
+    };
+  }
+
   @Get()
   async getAllUsers(): Promise<any> {
     console.log('masuk sini!');
