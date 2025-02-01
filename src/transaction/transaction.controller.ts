@@ -22,7 +22,7 @@ export class TransactionController {
   constructor() {
     this.transactionServiceClient = ClientProxyFactory.create({
       transport: Transport.TCP,
-      options: { host: '127.0.0.1', port: 3001 },
+      options: { host: '127.0.0.1', port: 3010 },
     });
   }
 
@@ -123,6 +123,46 @@ export class TransactionController {
           errors: error.errors || [],
         },
         error.statusCode || 500,
+      );
+    }
+  }
+
+  @Post('/init-transaction')
+  async createTransaction(@Body() body: any): Promise<any> {
+    try {
+      // Kirim permintaan ke Midtrans service
+      const result = await firstValueFrom(
+        this.transactionServiceClient.send(
+          { module: 'midtrans', action: 'initTransaction' },
+          body,
+        ),
+      );
+
+      // Jika gagal, kembalikan error
+      if (!result.success) {
+        throw new HttpException(
+          {
+            success: false,
+            message: result.message || 'Failed to create transaction',
+          },
+          result.statusCode || HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+
+      // Kembalikan hasil sukses
+      return {
+        success: true,
+        message: 'Transaction initialized successfully',
+        data: result.data,
+      };
+    } catch (error) {
+      console.error('Error in API Gateway (createTransaction):', error.message);
+      throw new HttpException(
+        {
+          success: false,
+          message: error.message || 'Failed to create transaction',
+        },
+        error.statusCode || HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }
