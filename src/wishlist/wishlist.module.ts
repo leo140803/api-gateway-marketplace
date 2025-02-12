@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { FollowController } from './follow.controller';
+import { WishlistController } from './wishlist.controller';
 import { SharedModule } from 'src/shared/shared.module';
 
 @Module({
   imports: [SharedModule],
-  controllers: [FollowController],
+  controllers: [WishlistController],
 })
-export class FollowModule {}
+export class WishlistModule {}

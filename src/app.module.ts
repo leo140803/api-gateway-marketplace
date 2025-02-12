@@ -18,6 +18,9 @@ import { ProductModule } from './product/product.module';
 import { CartModule } from './cart/cart.module';
 import { TypesModule } from './types/types.module';
 import { TransactionModule } from './transaction/transaction.module';
+import { ReviewModule } from './review/review.module';
+import { SharedModule } from './shared/shared.module';
+import { WishlistModule } from './wishlist/wishlist.module';
 
 @Module({
   imports: [
@@ -37,6 +40,9 @@ import { TransactionModule } from './transaction/transaction.module';
     CartModule,
     TypesModule,
     TransactionModule,
+    ReviewModule,
+    SharedModule,
+    WishlistModule,
   ],
   controllers: [AppController, FaqGatewayController],
   providers: [

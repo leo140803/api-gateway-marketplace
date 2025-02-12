@@ -1,4 +1,4 @@
-import { Controller, Get, HttpException } from '@nestjs/common';
+import { Controller, Get, HttpException, Inject } from '@nestjs/common';
 import {
   ClientProxy,
   ClientProxyFactory,
@@ -8,14 +8,9 @@ import { firstValueFrom } from 'rxjs';
 
 @Controller('/api/goldprice')
 export class GoldpriceController {
-  private goldpriceServiceClient: ClientProxy;
-
-  constructor() {
-    this.goldpriceServiceClient = ClientProxyFactory.create({
-      transport: Transport.TCP,
-      options: { host: '127.0.0.1', port: 3010 }, // Sesuaikan dengan konfigurasi microservice
-    });
-  }
+  constructor(
+    @Inject('MARKETPLACE') private readonly goldpriceServiceClient: ClientProxy,
+  ) {}
 
   @Get()
   async findAll(): Promise<any> {

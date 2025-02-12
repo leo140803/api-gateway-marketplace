@@ -10,6 +10,7 @@ import {
   UseGuards,
   HttpException,
   HttpStatus,
+  Inject,
 } from '@nestjs/common';
 import {
   ClientProxy,
@@ -21,15 +22,9 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('/api/vouchers')
 export class VoucherController {
-  //
-  private voucherServiceClient: ClientProxy;
-
-  constructor() {
-    this.voucherServiceClient = ClientProxyFactory.create({
-      transport: Transport.TCP,
-      options: { host: '127.0.0.1', port: 3010 }, // Sesuaikan dengan konfigurasi microservice
-    });
-  }
+  constructor(
+    @Inject('MARKETPLACE') private readonly voucherServiceClient: ClientProxy,
+  ) {}
 
   @UseGuards(JwtAuthGuard)
   @Get('active-not-purchased')

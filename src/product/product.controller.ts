@@ -8,6 +8,7 @@ import {
   Body,
   HttpException,
   Query,
+  Inject,
 } from '@nestjs/common';
 import {
   ClientProxy,
@@ -18,17 +19,13 @@ import { firstValueFrom } from 'rxjs';
 
 @Controller('/api/products')
 export class ProductController {
-  private productServiceClient: ClientProxy;
-
-  constructor() {
-    this.productServiceClient = ClientProxyFactory.create({
-      transport: Transport.TCP,
-      options: { host: '127.0.0.1', port: 3010 }, // Sesuaikan dengan konfigurasi microservice
-    });
-  }
+  constructor(
+    @Inject('MARKETPLACE') private readonly productServiceClient: ClientProxy,
+  ) {}
 
   @Get()
   async getAllProducts(): Promise<any> {
+    console.log('ada req');
     const result = await firstValueFrom(
       this.productServiceClient.send(
         { module: 'product', action: 'getAllProducts' },

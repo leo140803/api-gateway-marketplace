@@ -8,6 +8,7 @@ import {
   Param,
   HttpException,
   HttpStatus,
+  Inject,
 } from '@nestjs/common';
 import {
   ClientProxy,
@@ -18,17 +19,9 @@ import { firstValueFrom } from 'rxjs';
 
 @Controller('/api/types')
 export class TypesController {
-  private typeServiceClient: ClientProxy;
-
-  constructor() {
-    this.typeServiceClient = ClientProxyFactory.create({
-      transport: Transport.TCP,
-      options: {
-        host: '127.0.0.1', // Replace with the actual host of your microservice
-        port: 3001, // Replace with the actual port of your microservice
-      },
-    });
-  }
+  constructor(
+    @Inject('MARKETPLACE') private readonly typeServiceClient: ClientProxy,
+  ) {}
 
   @Get()
   async findAll(): Promise<any> {

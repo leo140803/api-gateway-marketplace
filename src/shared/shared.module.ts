@@ -1,21 +1,19 @@
 import { Module } from '@nestjs/common';
-import { MidtransController } from './midtrans.controller';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { SharedModule } from 'src/shared/shared.module';
 
 @Module({
   imports: [
     ClientsModule.register([
       {
-        name: 'TRANSACTION',
+        name: 'MARKETPLACE',
         transport: Transport.TCP,
         options: {
-          port: 3004,
+          host: '127.0.0.1',
+          port: 3010,
         },
       },
     ]),
-    SharedModule,
   ],
-  controllers: [MidtransController],
+  exports: [ClientsModule],
 })
-export class MidtransModule {}
+export class SharedModule {}

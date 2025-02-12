@@ -8,6 +8,7 @@ import {
   Req,
   UseGuards,
   HttpException,
+  Inject,
 } from '@nestjs/common';
 import {
   ClientProxy,
@@ -19,14 +20,9 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('/api/user-poin')
 export class UserPointController {
-  private userPoinServiceClient: ClientProxy;
-
-  constructor() {
-    this.userPoinServiceClient = ClientProxyFactory.create({
-      transport: Transport.TCP,
-      options: { host: '127.0.0.1', port: 3010 }, // Sesuaikan konfigurasi microservice
-    });
-  }
+  constructor(
+    @Inject('MARKETPLACE') private readonly userPoinServiceClient: ClientProxy,
+  ) {}
 
   @UseGuards(JwtAuthGuard)
   @Get(':storeId')

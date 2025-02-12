@@ -7,25 +7,18 @@ import {
   Req,
   UseGuards,
   HttpException,
+  Inject,
 } from '@nestjs/common';
-import {
-  ClientProxy,
-  ClientProxyFactory,
-  Transport,
-} from '@nestjs/microservices';
+import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('/api/poin-history')
 export class PoinHistoryController {
-  private poinHistoryServiceClient: ClientProxy;
-
-  constructor() {
-    this.poinHistoryServiceClient = ClientProxyFactory.create({
-      transport: Transport.TCP,
-      options: { host: '127.0.0.1', port: 3010 }, // Sesuaikan dengan konfigurasi microservice
-    });
-  }
+  constructor(
+    @Inject('MARKETPLACE')
+    private readonly poinHistoryServiceClient: ClientProxy,
+  ) {}
 
   @Post()
   async create(@Body() data: any): Promise<any> {

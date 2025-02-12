@@ -7,24 +7,20 @@ import {
   Get,
   Param,
   Query,
+  UseGuards,
+  Req,
+  Inject,
 } from '@nestjs/common';
-import {
-  ClientProxy,
-  ClientProxyFactory,
-  Transport,
-} from '@nestjs/microservices';
+import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('/api/transactions')
 export class TransactionController {
-  private transactionServiceClient: ClientProxy;
-
-  constructor() {
-    this.transactionServiceClient = ClientProxyFactory.create({
-      transport: Transport.TCP,
-      options: { host: '127.0.0.1', port: 3010 },
-    });
-  }
+  constructor(
+    @Inject('MARKETPLACE')
+    private readonly transactionServiceClient: ClientProxy,
+  ) {}
 
   @Get(':id')
   async getTransactionById(@Param('id') id: string): Promise<any> {
@@ -50,14 +46,18 @@ export class TransactionController {
   }
 
   @Get('/')
+  @UseGuards(JwtAuthGuard)
   async getTransactionByPaymentStatus(
     @Query('payment_status') paymentStatus: number,
+    @Req() req: any,
   ): Promise<any> {
     try {
+      const userId = req.user.user_id;
+
       const result = await firstValueFrom(
         this.transactionServiceClient.send(
           { module: 'transaction', action: 'getTransactionByPaymentStatus' },
-          { payment_status: paymentStatus },
+          { payment_status: paymentStatus, user_id: userId },
         ),
       );
 

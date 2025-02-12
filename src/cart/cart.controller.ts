@@ -8,24 +8,16 @@ import {
   Body,
   Param,
   HttpException,
+  Inject,
 } from '@nestjs/common';
-import {
-  ClientProxy,
-  ClientProxyFactory,
-  Transport,
-} from '@nestjs/microservices';
+import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 
 @Controller('/api/cart')
 export class CartController {
-  private cartServiceClient: ClientProxy;
-
-  constructor() {
-    this.cartServiceClient = ClientProxyFactory.create({
-      transport: Transport.TCP,
-      options: { host: '127.0.0.1', port: 3010 },
-    });
-  }
+  constructor(
+    @Inject('MARKETPLACE') private readonly cartServiceClient: ClientProxy,
+  ) {}
 
   @Get(':userId')
   async getCartItems(@Param('userId') userId: string): Promise<any> {

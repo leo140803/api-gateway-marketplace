@@ -12,28 +12,17 @@ import {
   Param,
   Put,
   HttpStatus,
+  Inject,
 } from '@nestjs/common';
 import { JwtAuthGuard } from './jwt-auth.guard';
-import {
-  ClientProxy,
-  ClientProxyFactory,
-  Transport,
-} from '@nestjs/microservices';
+import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 
 @Controller('/api/user')
 export class AuthController {
-  private userServiceClient: ClientProxy;
-
-  constructor() {
-    this.userServiceClient = ClientProxyFactory.create({
-      transport: Transport.TCP,
-      options: {
-        host: '127.0.0.1',
-        port: 3010,
-      },
-    });
-  }
+  constructor(
+    @Inject('MARKETPLACE') private readonly userServiceClient: ClientProxy,
+  ) {}
 
   // Endpoint to send OTP to user's email
   @Post('/send-otp')

@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   HttpException,
+  Inject,
   Param,
   Patch,
   Post,
@@ -22,14 +23,9 @@ import { extname, join } from 'path';
 
 @Controller('/api/store')
 export class StoreController {
-  private marketplaceClient: ClientProxy;
-
-  constructor() {
-    this.marketplaceClient = ClientProxyFactory.create({
-      transport: Transport.TCP,
-      options: { host: '0.0.0.0', port: 3010 }, // Replace with your microservice configuration
-    });
-  }
+  constructor(
+    @Inject('MARKETPLACE') private readonly marketplaceClient: ClientProxy,
+  ) {}
 
   @Get()
   async findAll(): Promise<any> {

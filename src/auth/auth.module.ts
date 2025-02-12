@@ -4,6 +4,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './jwt.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthController } from './auth.controller';
+import { SharedModule } from 'src/shared/shared.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { AuthController } from './auth.controller';
       }),
       inject: [ConfigService],
     }),
+    SharedModule,
   ],
   providers: [JwtStrategy],
   exports: [],
