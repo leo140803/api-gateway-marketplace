@@ -53,7 +53,8 @@ export class TransactionController {
   ): Promise<any> {
     try {
       const userId = req.user.user_id;
-
+      console.log(paymentStatus);
+      //
       const result = await firstValueFrom(
         this.transactionServiceClient.send(
           { module: 'transaction', action: 'getTransactionByPaymentStatus' },
