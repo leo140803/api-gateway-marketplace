@@ -25,6 +25,28 @@ export class UserPointController {
   ) {}
 
   @UseGuards(JwtAuthGuard)
+  @Get()
+  async getUserPoints(@Req() req: any): Promise<any> {
+    const userId = req.user.user_id;
+
+    const result = await firstValueFrom(
+      this.userPoinServiceClient.send(
+        { module: 'user-point', action: 'findAll' },
+        { userId },
+      ),
+    );
+
+    if (!result.success) {
+      throw new HttpException(
+        result.message || 'Internal Server Error',
+        result.statusCode || 500,
+      );
+    }
+
+    return result;
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get(':storeId')
   async getUserStorePoints(
     @Param('storeId') storeId: string,

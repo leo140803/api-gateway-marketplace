@@ -21,6 +21,7 @@ import { TransactionModule } from './transaction/transaction.module';
 import { ReviewModule } from './review/review.module';
 import { SharedModule } from './shared/shared.module';
 import { WishlistModule } from './wishlist/wishlist.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { WishlistModule } from './wishlist/wishlist.module';
     ReviewModule,
     SharedModule,
     WishlistModule,
+    DashboardModule,
   ],
   controllers: [AppController, FaqGatewayController],
   providers: [

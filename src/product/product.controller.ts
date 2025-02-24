@@ -9,6 +9,8 @@ import {
   HttpException,
   Query,
   Inject,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import {
   ClientProxy,
@@ -16,6 +18,7 @@ import {
   Transport,
 } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('/api/products')
 export class ProductController {
@@ -43,6 +46,40 @@ export class ProductController {
     return result;
   }
 
+  @Get('recommendation')
+  @UseGuards(JwtAuthGuard)
+  async getRecommendation(@Req() req: any): Promise<any> {
+    try {
+      const userId = req.user.user_id;
+      const result = await firstValueFrom(
+        this.productServiceClient.send(
+          { module: 'product', action: 'getRecommendation' },
+          { user_id: userId },
+        ),
+      );
+      if (!result.success) {
+        throw new HttpException(
+          {
+            success: result.success || false,
+            message: result.message || 'Internal Server Error',
+            errors: result.errors || [],
+          },
+          result.statusCode || 500,
+        );
+      }
+
+      return result;
+    } catch (error) {
+       throw new HttpException(
+        {
+          success: false,
+          message: error.message || 'Internal Server Error',
+          errors: error.errors || [],
+        },
+        error.statusCode || 500,
+      );
+    }
+  }
   @Get('search')
   async searchProducts(@Query('q') query: string): Promise<any> {
     if (!query || query.trim() === '') {
