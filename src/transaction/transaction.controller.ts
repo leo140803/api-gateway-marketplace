@@ -49,6 +49,7 @@ export class TransactionController {
   @UseGuards(JwtAuthGuard)
   async getTransactionByPaymentStatus(
     @Query('payment_status') paymentStatus: number,
+    @Query('type') type: number,
     @Req() req: any,
   ): Promise<any> {
     try {
@@ -58,7 +59,7 @@ export class TransactionController {
       const result = await firstValueFrom(
         this.transactionServiceClient.send(
           { module: 'transaction', action: 'getTransactionByPaymentStatus' },
-          { payment_status: paymentStatus, user_id: userId },
+          { payment_status: paymentStatus, user_id: userId, type: type },
         ),
       );
 
