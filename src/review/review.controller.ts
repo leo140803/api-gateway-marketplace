@@ -3,6 +3,7 @@ import {
   Controller,
   HttpException,
   Inject,
+  Patch,
   Post,
   Req,
   UseGuards,
@@ -30,6 +31,35 @@ export class ReviewController {
     const result = await firstValueFrom(
       this.reviewServiceClient.send(
         { module: 'review', action: 'giveReview' },
+        payload,
+      ),
+    );
+
+    if (!result.success) {
+      throw new HttpException(
+        {
+          success: result.success || false,
+          message: result.message || 'Internal Server Error',
+          errors: result.errors || [],
+        },
+        result.statusCode || 500,
+      );
+    }
+
+    return result;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch()
+  async editReview(@Body() data: any, @Req() req: any): Promise<any> {
+    const user_id = req.user.user_id;
+    const payload = { ...data, user_id };
+
+    console.log('Editing review:', payload);
+
+    const result = await firstValueFrom(
+      this.reviewServiceClient.send(
+        { module: 'review', action: 'editReview' },
         payload,
       ),
     );

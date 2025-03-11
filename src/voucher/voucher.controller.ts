@@ -51,6 +51,22 @@ export class VoucherController {
     return result;
   }
 
+  @Get('send-notif')
+  async sendNotif(): Promise<any> {
+    const result = await firstValueFrom(
+      this.voucherServiceClient.send(
+        {
+          module: 'notifications',
+          action: 'send',
+        },
+        {
+          store_id: '601dae52-4054-482b-ba6b-cdb3d84d04c3',
+          transaction_code: 'testing',
+        },
+      ),
+    );
+  }
+
   @UseGuards(JwtAuthGuard)
   @Get('purchased-not-used/')
   async findPurchasedAndNotUsedVouchers(
