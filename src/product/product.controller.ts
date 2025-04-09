@@ -70,7 +70,7 @@ export class ProductController {
 
       return result;
     } catch (error) {
-       throw new HttpException(
+      throw new HttpException(
         {
           success: false,
           message: error.message || 'Internal Server Error',
@@ -80,6 +80,28 @@ export class ProductController {
       );
     }
   }
+
+  @Get('barcode/:barcode')
+  async getProductCodeByBarcode(
+    @Param('barcode') barcode: string,
+  ): Promise<any> {
+    const result = await firstValueFrom(
+      this.productServiceClient.send(
+        { module: 'product', action: 'getProductCodeByBarcode' },
+        { barcode },
+      ),
+    );
+
+    if (!result.success) {
+      throw new HttpException(
+        result.message || 'Internal Server Error',
+        result.statusCode || 500,
+      );
+    }
+
+    return result;
+  }
+
   @Get('search')
   async searchProducts(@Query('q') query: string): Promise<any> {
     if (!query || query.trim() === '') {
