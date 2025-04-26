@@ -8,15 +8,15 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
         name: 'MARKETPLACE',
         transport: Transport.TCP,
         options: {
-          host: '127.0.0.1',
-          port: 3010,
+          host: process.env.MARKETPLACE_TCP_HOST || '127.0.0.1',
+          port: Number(process.env.MARKETPLACE_TCP_PORT) || 3010,
         },
       },
       {
         name: 'TRANSACTION',
         transport: Transport.TCP,
         options: {
-          port: 3004,
+          port: Number(process.env.TRANSACTION_TCP_PORT) || 3005,
         },
       },
     ]),

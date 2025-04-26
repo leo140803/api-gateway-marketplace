@@ -29,7 +29,10 @@ async function bootstrap() {
   });
 
   // Start the HTTP server
-  await app.listen(3001, '0.0.0.0');
+  await app.listen(
+    Number(process.env.HTTP_PORT) || 3001,
+    process.env.HTTP_HOST || '0.0.0.0',
+  );
   console.log(`Application is running on: http://127.0.0.1:3001`);
 }
 bootstrap();

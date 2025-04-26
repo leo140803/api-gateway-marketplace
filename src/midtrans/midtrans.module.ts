@@ -10,7 +10,7 @@ import { SharedModule } from 'src/shared/shared.module';
         name: 'TRANSACTION',
         transport: Transport.TCP,
         options: {
-          port: 3004,
+          port: Number(process.env.TRANSACTION_TCP_PORT) || 3005,
         },
       },
     ]),
