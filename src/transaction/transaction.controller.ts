@@ -18,14 +18,16 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 @Controller('/api/transactions')
 export class TransactionController {
   constructor(
-    @Inject('MARKETPLACE')
-    private readonly transactionServiceClient: ClientProxy,
+    @Inject('MARKETPLACE_WRITER')
+    private readonly marketplaceWriterClient: ClientProxy,
+    @Inject('MARKETPLACE_READER')
+    private readonly marketplaceReaderClient: ClientProxy,
   ) {}
 
   @Get(':id')
   async getTransactionById(@Param('id') id: string): Promise<any> {
     const result = await firstValueFrom(
-      this.transactionServiceClient.send(
+      this.marketplaceReaderClient.send(
         { module: 'transaction', action: 'getTransactionById' },
         { id },
       ),
@@ -57,7 +59,7 @@ export class TransactionController {
       console.log(paymentStatus);
       //
       const result = await firstValueFrom(
-        this.transactionServiceClient.send(
+        this.marketplaceReaderClient.send(
           { module: 'transaction', action: 'getTransactionByPaymentStatus' },
           { payment_status: paymentStatus, user_id: userId, type: type },
         ),
@@ -95,7 +97,7 @@ export class TransactionController {
   async createTransactionWithItems(@Body() data: any) {
     try {
       const result = await firstValueFrom(
-        this.transactionServiceClient.send(
+        this.marketplaceWriterClient.send(
           { module: 'transaction', action: 'createTransactionWithItems' },
           data,
         ),
@@ -134,7 +136,7 @@ export class TransactionController {
     try {
       // Kirim permintaan ke Midtrans service
       const result = await firstValueFrom(
-        this.transactionServiceClient.send(
+        this.marketplaceWriterClient.send(
           { module: 'midtrans', action: 'initTransaction' },
           body,
         ),

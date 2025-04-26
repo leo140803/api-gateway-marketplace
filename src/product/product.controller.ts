@@ -23,14 +23,17 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 @Controller('/api/products')
 export class ProductController {
   constructor(
-    @Inject('MARKETPLACE') private readonly productServiceClient: ClientProxy,
+    @Inject('MARKETPLACE_WRITER')
+    private readonly marketplaceWriterClient: ClientProxy,
+    @Inject('MARKETPLACE_READER')
+    private readonly marketplaceReaderClient: ClientProxy,
   ) {}
 
   @Get()
   async getAllProducts(): Promise<any> {
     console.log('ada req');
     const result = await firstValueFrom(
-      this.productServiceClient.send(
+      this.marketplaceReaderClient.send(
         { module: 'product', action: 'getAllProducts' },
         {},
       ),
@@ -52,7 +55,7 @@ export class ProductController {
     try {
       const userId = req.user.user_id;
       const result = await firstValueFrom(
-        this.productServiceClient.send(
+        this.marketplaceReaderClient.send(
           { module: 'product', action: 'getRecommendation' },
           { user_id: userId },
         ),
@@ -86,7 +89,7 @@ export class ProductController {
     @Param('barcode') barcode: string,
   ): Promise<any> {
     const result = await firstValueFrom(
-      this.productServiceClient.send(
+      this.marketplaceReaderClient.send(
         { module: 'product', action: 'getProductCodeByBarcode' },
         { barcode },
       ),
@@ -109,7 +112,7 @@ export class ProductController {
     }
 
     const result = await firstValueFrom(
-      this.productServiceClient.send(
+      this.marketplaceReaderClient.send(
         { module: 'product', action: 'searchProducts' },
         { query },
       ),
@@ -128,7 +131,7 @@ export class ProductController {
   @Get(':id')
   async getProductById(@Param('id') id: string): Promise<any> {
     const result = await firstValueFrom(
-      this.productServiceClient.send(
+      this.marketplaceReaderClient.send(
         { module: 'product', action: 'getProductById' },
         { id },
       ),
@@ -147,7 +150,7 @@ export class ProductController {
   @Get('store/:storeId')
   async getProductsByStore(@Param('storeId') storeId: string): Promise<any> {
     const result = await firstValueFrom(
-      this.productServiceClient.send(
+      this.marketplaceReaderClient.send(
         { module: 'product', action: 'getProductsByStore' },
         { storeId },
       ),
@@ -168,7 +171,7 @@ export class ProductController {
     @Param('categoryId') categoryId: string,
   ): Promise<any> {
     const result = await firstValueFrom(
-      this.productServiceClient.send(
+      this.marketplaceReaderClient.send(
         { module: 'product', action: 'getProductsByCategory' },
         { categoryId },
       ),
@@ -187,7 +190,7 @@ export class ProductController {
   @Post()
   async createProduct(@Body() body: any): Promise<any> {
     const result = await firstValueFrom(
-      this.productServiceClient.send(
+      this.marketplaceWriterClient.send(
         { module: 'product', action: 'createProduct' },
         body,
       ),
@@ -209,7 +212,7 @@ export class ProductController {
     @Body() body: any,
   ): Promise<any> {
     const result = await firstValueFrom(
-      this.productServiceClient.send(
+      this.marketplaceWriterClient.send(
         { module: 'product', action: 'updateProduct' },
         { id, ...body },
       ),
@@ -228,7 +231,7 @@ export class ProductController {
   @Delete(':id')
   async deleteProduct(@Param('id') id: string): Promise<any> {
     const result = await firstValueFrom(
-      this.productServiceClient.send(
+      this.marketplaceWriterClient.send(
         { module: 'product', action: 'deleteProduct' },
         { id },
       ),

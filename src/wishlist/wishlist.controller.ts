@@ -18,7 +18,10 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 @Controller('/api/wishlist')
 export class WishlistController {
   constructor(
-    @Inject('MARKETPLACE') private readonly wishlistServiceClient: ClientProxy,
+    @Inject('MARKETPLACE_READER')
+    private readonly marketplaceReaderClient: ClientProxy,
+    @Inject('MARKETPLACE_WRITER')
+    private readonly marketplaceWriterClient: ClientProxy,
   ) {}
 
   @UseGuards(JwtAuthGuard)
@@ -29,7 +32,7 @@ export class WishlistController {
     console.log(data);
 
     const result = await firstValueFrom(
-      this.wishlistServiceClient.send(
+      this.marketplaceWriterClient.send(
         { module: 'wishlist', action: 'wishlistProduct' },
         payload,
       ),
@@ -58,7 +61,7 @@ export class WishlistController {
     const user_id = req.user.user_id;
 
     const result = await firstValueFrom(
-      this.wishlistServiceClient.send(
+      this.marketplaceReaderClient.send(
         { module: 'wishlist', action: 'isWishlist' },
         { user_id, product_id },
       ),
@@ -84,7 +87,7 @@ export class WishlistController {
     const user_id = req.user.user_id;
 
     const result = await firstValueFrom(
-      this.wishlistServiceClient.send(
+      this.marketplaceReaderClient.send(
         { module: 'wishlist', action: 'getWishlistByUserId' },
         { user_id },
       ),
@@ -113,7 +116,7 @@ export class WishlistController {
     const user_id = req.user.user_id;
 
     const result = await firstValueFrom(
-      this.wishlistServiceClient.send(
+      this.marketplaceWriterClient.send(
         { module: 'wishlist', action: 'unwishlistProduct' },
         { user_id, product_id },
       ),

@@ -24,13 +24,14 @@ import { extname, join } from 'path';
 @Controller('/api/store')
 export class StoreController {
   constructor(
-    @Inject('MARKETPLACE') private readonly marketplaceClient: ClientProxy,
+    @Inject('MARKETPLACE_READER')
+    private readonly marketplaceReaderClient: ClientProxy,
   ) {}
 
   @Get()
   async findAll(): Promise<any> {
     console.log('Fetching all stores');
-    return this.marketplaceClient
+    return this.marketplaceReaderClient
       .send({ service: 'marketplace', module: 'store', action: 'findAll' }, {})
       .toPromise();
   }
@@ -44,7 +45,7 @@ export class StoreController {
     }
 
     try {
-      const response = await this.marketplaceClient
+      const response = await this.marketplaceReaderClient
         .send(
           { service: 'marketplace', module: 'store', action: 'search' },
           { query },
@@ -61,125 +62,11 @@ export class StoreController {
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<any> {
     console.log(`Fetching store with ID: ${id}`);
-    return this.marketplaceClient
+    return this.marketplaceReaderClient
       .send(
         { service: 'marketplace', module: 'store', action: 'findOne' },
         { id },
       )
       .toPromise();
-  }
-
-  @Post()
-  @UseInterceptors(FileInterceptor('image'))
-  async create(
-    @Body() body: any,
-    @UploadedFile() file: Express.Multer.File,
-  ): Promise<any> {
-    console.log('Received payload from publisher service:', body);
-
-    // let fileName: string | null = null;
-    // let imageUrl: string | null = null;
-
-    // if (file) {
-    //   console.log('Processing file upload...');
-    //   if (!Buffer.isBuffer(file.buffer)) {
-    //     throw new Error('Invalid file buffer');
-    //   }
-
-    //   // Set the upload directory to the root-level uploads/storeLogo
-    //   const uploadDir = join(process.cwd(), 'uploads/storeLogo');
-
-    //   fileName = `store-${Date.now()}-${Math.round(Math.random() * 1e9)}${extname(file.originalname)}`;
-    //   const uploadPath = join(uploadDir, fileName);
-
-    //   if (!fs.existsSync(uploadDir)) {
-    //     fs.mkdirSync(uploadDir, { recursive: true });
-    //   }
-
-    //   fs.writeFileSync(uploadPath, file.buffer);
-    //   console.log('File saved successfully:', uploadPath);
-
-    //   imageUrl = `/uploads/storeLogo/${fileName}`;
-    // }
-
-    // const payload = { ...body, image_url: imageUrl };
-
-    return this.marketplaceClient
-      .send({ service: 'marketplace', module: 'store', action: 'create' }, body)
-      .toPromise();
-  }
-
-  @Patch(':id')
-  @UseInterceptors(FileInterceptor('image'))
-  async update(
-    @Param('id') id: string,
-    @Body() body: any,
-    @UploadedFile() file?: Express.Multer.File,
-  ): Promise<any> {
-    console.log(`Updating store with ID: ${id}`);
-    console.log(`Update Store Data: ${body}`);
-
-    // let fileName: string | null = null;
-    // let imageUrl: string | null = null;
-
-    // if (file) {
-    //   console.log('Processing file upload...');
-    //   if (!Buffer.isBuffer(file.buffer)) {
-    //     throw new Error('Invalid file buffer');
-    //   }
-
-    //   fileName = `store-${Date.now()}-${Math.round(Math.random() * 1e9)}${extname(file.originalname)}`;
-    //   const uploadPath = join(process.cwd(), 'uploads/storeLogo', fileName);
-
-    //   if (!fs.existsSync(join(process.cwd(), 'uploads/storeLogo'))) {
-    //     fs.mkdirSync(join(process.cwd(), 'uploads/storeLogo'), {
-    //       recursive: true,
-    //     });
-    //   }
-
-    //   fs.writeFileSync(uploadPath, file.buffer);
-    //   console.log('File saved successfully:', uploadPath);
-    //   imageUrl = `/uploads/storeLogo/${fileName}`;
-    // }
-
-    // const payload = { id, ...body, image_url: imageUrl };
-    // return body;
-    return this.marketplaceClient
-      .send({ service: 'marketplace', module: 'store', action: 'update' }, body)
-      .toPromise();
-  }
-
-  @Delete(':id')
-  async remove(@Param('id') id: string): Promise<any> {
-    console.log(`Deleting store with ID: ${id}`);
-    try {
-      const response = await this.marketplaceClient
-        .send(
-          { service: 'marketplace', module: 'store', action: 'delete' },
-          { id },
-        )
-        .toPromise();
-
-      if (response?.data?.image_url) {
-        const filePath = join(process.cwd(), response.data.image_url);
-
-        if (fs.existsSync(filePath)) {
-          fs.unlinkSync(filePath); // Delete the file
-          console.log(`Deleted file: ${filePath}`);
-        } else {
-          console.warn(`File not found: ${filePath}`);
-        }
-      }
-
-      return {
-        data: response.data,
-        message: 'Successfully deleted store and associated image (if any)',
-        success: true,
-        statusCode: 200,
-      };
-    } catch (error) {
-      console.error('Error deleting store:', error.message);
-      throw error;
-    }
   }
 }

@@ -4,12 +4,13 @@ import { ClientProxy } from '@nestjs/microservices';
 @Controller('/api/dashboard')
 export class DashboardController {
   constructor(
-    @Inject('MARKETPLACE') private readonly marketplaceClient: ClientProxy,
+    @Inject('MARKETPLACE_WRITER')
+    private readonly marketplaceWriterClient: ClientProxy,
   ) {}
 
   @Get()
   async getReport(): Promise<any> {
-    return this.marketplaceClient
+    return this.marketplaceWriterClient
       .send({ module: 'dashboard', action: 'getReportData' }, {})
       .toPromise();
   }
@@ -24,7 +25,7 @@ export class DashboardController {
       };
     }
 
-    return this.marketplaceClient
+    return this.marketplaceWriterClient
       .send({ module: 'storeReport', action: 'getStoreReport' }, storeId)
       .toPromise();
   }

@@ -16,13 +16,16 @@ import { firstValueFrom } from 'rxjs';
 @Controller('/api/cart')
 export class CartController {
   constructor(
-    @Inject('MARKETPLACE') private readonly cartServiceClient: ClientProxy,
+    @Inject('MARKETPLACE_WRITER')
+    private readonly marketplaceWriterClient: ClientProxy,
+    @Inject('MARKETPLACE_READER')
+    private readonly marketplaceReaderClient: ClientProxy,
   ) {}
 
   @Get(':userId')
   async getCartItems(@Param('userId') userId: string): Promise<any> {
     const result = await firstValueFrom(
-      this.cartServiceClient.send(
+      this.marketplaceReaderClient.send(
         { module: 'cart', action: 'getCartItems' },
         { userId },
       ),
@@ -46,7 +49,7 @@ export class CartController {
   ): Promise<any> {
     console.log('add to cart');
     const result = await firstValueFrom(
-      this.cartServiceClient.send(
+      this.marketplaceWriterClient.send(
         { module: 'cart', action: 'addToCart' },
         { userId, product_code_id, quantity },
       ),
@@ -68,7 +71,7 @@ export class CartController {
     @Body('quantity') quantity: number,
   ): Promise<any> {
     const result = await firstValueFrom(
-      this.cartServiceClient.send(
+      this.marketplaceWriterClient.send(
         { module: 'cart', action: 'updateCartItem' },
         { cartId, quantity },
       ),
@@ -87,7 +90,7 @@ export class CartController {
   @Patch(':cartId/increment')
   async incrementCartItem(@Param('cartId') cartId: string): Promise<any> {
     const result = await firstValueFrom(
-      this.cartServiceClient.send(
+      this.marketplaceWriterClient.send(
         { module: 'cart', action: 'incrementCartItem' },
         { cartId },
       ),
@@ -106,7 +109,7 @@ export class CartController {
   @Patch(':cartId/decrement')
   async decrementCartItem(@Param('cartId') cartId: string): Promise<any> {
     const result = await firstValueFrom(
-      this.cartServiceClient.send(
+      this.marketplaceWriterClient.send(
         { module: 'cart', action: 'decrementCartItem' },
         { cartId },
       ),
@@ -125,7 +128,7 @@ export class CartController {
   @Delete(':cartId')
   async removeCartItem(@Param('cartId') cartId: string): Promise<any> {
     const result = await firstValueFrom(
-      this.cartServiceClient.send(
+      this.marketplaceWriterClient.send(
         { module: 'cart', action: 'removeCartItem' },
         { cartId },
       ),
@@ -144,7 +147,7 @@ export class CartController {
   @Delete('/clear/:userId')
   async clearCart(@Param('userId') userId: string): Promise<any> {
     const result = await firstValueFrom(
-      this.cartServiceClient.send(
+      this.marketplaceWriterClient.send(
         { module: 'cart', action: 'clearCart' },
         { userId },
       ),

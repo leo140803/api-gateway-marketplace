@@ -16,7 +16,6 @@ import { PointhistoryModule } from './pointhistory/pointhistory.module';
 import { VoucherModule } from './voucher/voucher.module';
 import { ProductModule } from './product/product.module';
 import { CartModule } from './cart/cart.module';
-import { TypesModule } from './types/types.module';
 import { TransactionModule } from './transaction/transaction.module';
 import { ReviewModule } from './review/review.module';
 import { SharedModule } from './shared/shared.module';
@@ -39,7 +38,6 @@ import { DashboardModule } from './dashboard/dashboard.module';
     VoucherModule,
     ProductModule,
     CartModule,
-    TypesModule,
     TransactionModule,
     ReviewModule,
     SharedModule,

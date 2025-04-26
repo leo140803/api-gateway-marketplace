@@ -19,8 +19,6 @@ import { firstValueFrom } from 'rxjs';
 export class MidtransController {
   constructor(
     @Inject('TRANSACTION') private readonly transactionClient: ClientProxy,
-    @Inject('MARKETPLACE')
-    private readonly transactionServiceClient: ClientProxy,
   ) {}
 
   //

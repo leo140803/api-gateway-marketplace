@@ -21,7 +21,10 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 @Controller('/api/user-poin')
 export class UserPointController {
   constructor(
-    @Inject('MARKETPLACE') private readonly userPoinServiceClient: ClientProxy,
+    @Inject('MARKETPLACE_WRITER')
+    private readonly marketplaceWriterClient: ClientProxy,
+    @Inject('MARKETPLACE_READER')
+    private readonly marketplaceReaderClient: ClientProxy,
   ) {}
 
   @UseGuards(JwtAuthGuard)
@@ -30,7 +33,7 @@ export class UserPointController {
     const userId = req.user.user_id;
 
     const result = await firstValueFrom(
-      this.userPoinServiceClient.send(
+      this.marketplaceReaderClient.send(
         { module: 'user-point', action: 'findAll' },
         { userId },
       ),
@@ -55,7 +58,7 @@ export class UserPointController {
     const userId = req.user.user_id;
 
     const result = await firstValueFrom(
-      this.userPoinServiceClient.send(
+      this.marketplaceReaderClient.send(
         { module: 'user-poin', action: 'getUserStorePoints' },
         { userId, storeId },
       ),
@@ -81,7 +84,7 @@ export class UserPointController {
     const userId = req.user.user_id;
 
     const result = await firstValueFrom(
-      this.userPoinServiceClient.send(
+      this.marketplaceWriterClient.send(
         { module: 'user-poin', action: 'addPoints' },
         { userId, storeId, points },
       ),
@@ -107,7 +110,7 @@ export class UserPointController {
     const userId = req.user.user_id;
 
     const result = await firstValueFrom(
-      this.userPoinServiceClient.send(
+      this.marketplaceWriterClient.send(
         { module: 'user-poin', action: 'deductPoints' },
         { userId, storeId, points },
       ),
@@ -133,7 +136,7 @@ export class UserPointController {
     const userId = req.user.user_id;
 
     const result = await firstValueFrom(
-      this.userPoinServiceClient.send(
+      this.marketplaceWriterClient.send(
         { module: 'user-poin', action: 'updatePoints' },
         { userId, storeId, points },
       ),

@@ -5,11 +5,19 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
   imports: [
     ClientsModule.register([
       {
-        name: 'MARKETPLACE',
+        name: 'MARKETPLACE_WRITER',
         transport: Transport.TCP,
         options: {
           host: process.env.MARKETPLACE_TCP_HOST || '127.0.0.1',
-          port: Number(process.env.MARKETPLACE_TCP_PORT) || 3010,
+          port: Number(process.env.MARKETPLACE_WRITER_PORT) || 3010,
+        },
+      },
+      {
+        name: 'MARKETPLACE_READER',
+        transport: Transport.TCP,
+        options: {
+          host: process.env.MARKETPLACE_TCP_HOST || '127.0.0.1',
+          port: Number(process.env.MARKETPLACE_READER_PORT) || 3010,
         },
       },
       {

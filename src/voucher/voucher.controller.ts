@@ -23,7 +23,10 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 @Controller('/api/vouchers')
 export class VoucherController {
   constructor(
-    @Inject('MARKETPLACE') private readonly voucherServiceClient: ClientProxy,
+    @Inject('MARKETPLACE_READER')
+    private readonly marketplaceReaderClient: ClientProxy,
+    @Inject('MARKETPLACE_WRITER')
+    private readonly marketplaceWriterClient: ClientProxy,
   ) {}
 
   @UseGuards(JwtAuthGuard)
@@ -35,7 +38,7 @@ export class VoucherController {
     const userId = req.user.user_id;
 
     const result = await firstValueFrom(
-      this.voucherServiceClient.send(
+      this.marketplaceReaderClient.send(
         { module: 'voucher', action: 'getActiveAndNotPurchased' },
         { userId, storeId },
       ),
@@ -51,22 +54,6 @@ export class VoucherController {
     return result;
   }
 
-  @Get('send-notif')
-  async sendNotif(): Promise<any> {
-    const result = await firstValueFrom(
-      this.voucherServiceClient.send(
-        {
-          module: 'notifications',
-          action: 'send',
-        },
-        {
-          store_id: '601dae52-4054-482b-ba6b-cdb3d84d04c3',
-          transaction_code: 'testing',
-        },
-      ),
-    );
-  }
-
   @UseGuards(JwtAuthGuard)
   @Get('purchased-not-used/')
   async findPurchasedAndNotUsedVouchers(
@@ -76,7 +63,7 @@ export class VoucherController {
     const userId = req.user.user_id;
 
     const result = await firstValueFrom(
-      this.voucherServiceClient.send(
+      this.marketplaceReaderClient.send(
         { module: 'voucher', action: 'findPurchasedAndNotUsedVouchers' },
         { userId, storeId },
       ),
@@ -102,7 +89,7 @@ export class VoucherController {
     const userId = req.user.user_id;
 
     const result = await firstValueFrom(
-      this.voucherServiceClient.send(
+      this.marketplaceReaderClient.send(
         { module: 'voucher', action: 'getApplicableVouchers' },
         { userId, storeId, transactionAmount },
       ),
@@ -128,7 +115,7 @@ export class VoucherController {
     const userId = req.user.user_id;
 
     const result = await firstValueFrom(
-      this.voucherServiceClient.send(
+      this.marketplaceReaderClient.send(
         { module: 'voucher', action: 'getNotApplicableVouchers' },
         { userId, storeId, transactionAmount },
       ),
@@ -147,7 +134,7 @@ export class VoucherController {
   @Get()
   async findAll(): Promise<any> {
     const result = await firstValueFrom(
-      this.voucherServiceClient.send(
+      this.marketplaceReaderClient.send(
         { module: 'voucher', action: 'findAll' },
         {},
       ),
@@ -166,50 +153,9 @@ export class VoucherController {
   @Get(':id')
   async findOneById(@Param('id') voucher_id: string): Promise<any> {
     const result = await firstValueFrom(
-      this.voucherServiceClient.send(
+      this.marketplaceReaderClient.send(
         { module: 'voucher', action: 'findOneById' },
         { voucher_id },
-      ),
-    );
-
-    if (!result.success) {
-      throw new HttpException(
-        result.message || 'Internal Server Error',
-        result.statusCode || 500,
-      );
-    }
-
-    return result;
-  }
-
-  @Post()
-  async create(@Body() request: any): Promise<any> {
-    const result = await firstValueFrom(
-      this.voucherServiceClient.send(
-        { module: 'voucher', action: 'create' },
-        request,
-      ),
-    );
-
-    if (!result.success) {
-      throw new HttpException(
-        result.message || 'Internal Server Error',
-        result.statusCode || 500,
-      );
-    }
-
-    return result;
-  }
-
-  @Put(':voucher_id')
-  async update(
-    @Param('voucher_id') voucher_id: string,
-    @Body() request: any,
-  ): Promise<any> {
-    const result = await firstValueFrom(
-      this.voucherServiceClient.send(
-        { module: 'voucher', action: 'update' },
-        { voucher_id, ...request },
       ),
     );
 
@@ -233,7 +179,7 @@ export class VoucherController {
     const userId = req.user.user_id;
 
     const result = await firstValueFrom(
-      this.voucherServiceClient.send(
+      this.marketplaceWriterClient.send(
         { module: 'voucher-own', action: 'purchaseVoucher' },
         { userId, voucherId },
       ),

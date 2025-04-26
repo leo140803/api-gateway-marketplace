@@ -16,14 +16,16 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 @Controller('/api/poin-history')
 export class PoinHistoryController {
   constructor(
-    @Inject('MARKETPLACE')
-    private readonly poinHistoryServiceClient: ClientProxy,
+    @Inject('MARKETPLACE_WRITER')
+    private readonly marketplaceWriterClient: ClientProxy,
+    @Inject('MARKETPLACE_READER')
+    private readonly marketplaceReaderClient: ClientProxy,
   ) {}
 
   @Post()
   async create(@Body() data: any): Promise<any> {
     const result = await firstValueFrom(
-      this.poinHistoryServiceClient.send(
+      this.marketplaceWriterClient.send(
         { module: 'poin-history', action: 'create' },
         data,
       ),
@@ -48,7 +50,7 @@ export class PoinHistoryController {
     const userId = req.user.user_id;
 
     const result = await firstValueFrom(
-      this.poinHistoryServiceClient.send(
+      this.marketplaceReaderClient.send(
         { module: 'poin-history', action: 'findByCustomer' },
         { userId, storeId },
       ),

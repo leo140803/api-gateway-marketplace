@@ -18,7 +18,10 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 @Controller('/api/follow')
 export class FollowController {
   constructor(
-    @Inject('MARKETPLACE') private readonly followServiceClient: ClientProxy,
+    @Inject('MARKETPLACE_WRITER')
+    private readonly marketplaceWriterClient: ClientProxy,
+    @Inject('MARKETPLACE_READER')
+    private readonly marketplaceReaderClient: ClientProxy,
   ) {}
 
   @UseGuards(JwtAuthGuard)
@@ -28,7 +31,7 @@ export class FollowController {
     const payload = { ...data, customer_id };
 
     const result = await firstValueFrom(
-      this.followServiceClient.send(
+      this.marketplaceWriterClient.send(
         { module: 'follow', action: 'followStore' },
         payload,
       ),
@@ -54,7 +57,7 @@ export class FollowController {
     const customer_id = req.user.user_id;
 
     const result = await firstValueFrom(
-      this.followServiceClient.send(
+      this.marketplaceReaderClient.send(
         { module: 'follow', action: 'getFollowedStores' },
         { customer_id },
       ),
@@ -83,7 +86,7 @@ export class FollowController {
     const customer_id = req.user.user_id;
 
     const result = await firstValueFrom(
-      this.followServiceClient.send(
+      this.marketplaceWriterClient.send(
         { module: 'follow', action: 'unfollowStore' },
         { store_id, customer_id },
       ),
@@ -112,7 +115,7 @@ export class FollowController {
     const customer_id = req.user.user_id;
 
     const result = await firstValueFrom(
-      this.followServiceClient.send(
+      this.marketplaceReaderClient.send(
         { module: 'follow', action: 'isFollowing' },
         { store_id, customer_id },
       ),

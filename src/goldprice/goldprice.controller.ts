@@ -9,14 +9,17 @@ import { firstValueFrom } from 'rxjs';
 @Controller('/api/goldprice')
 export class GoldpriceController {
   constructor(
-    @Inject('MARKETPLACE') private readonly goldpriceServiceClient: ClientProxy,
+    @Inject('MARKETPLACE_WRITER')
+    private readonly marketplaceWriterClient: ClientProxy,
+    @Inject('MARKETPLACE_READER')
+    private readonly marketplaceReaderClient: ClientProxy,
   ) {}
 
   @Get()
   async findAll(): Promise<any> {
     try {
       const result = await firstValueFrom(
-        this.goldpriceServiceClient.send(
+        this.marketplaceReaderClient.send(
           { service: 'marketplace', module: 'goldprice', action: 'findAll' },
           {},
         ),
@@ -51,7 +54,7 @@ export class GoldpriceController {
   async findPriceNow(): Promise<any> {
     try {
       const result = await firstValueFrom(
-        this.goldpriceServiceClient.send(
+        this.marketplaceReaderClient.send(
           {
             service: 'marketplace',
             module: 'goldprice',
@@ -90,7 +93,7 @@ export class GoldpriceController {
   async findHistoricalData(): Promise<any> {
     try {
       const result = await firstValueFrom(
-        this.goldpriceServiceClient.send(
+        this.marketplaceReaderClient.send(
           {
             service: 'marketplace',
             module: 'goldprice',

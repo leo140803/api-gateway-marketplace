@@ -19,7 +19,10 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 @Controller('/api/review')
 export class ReviewController {
   constructor(
-    @Inject('MARKETPLACE') private readonly reviewServiceClient: ClientProxy,
+    @Inject('MARKETPLACE_WRITER')
+    private readonly marketplaceWriterClient: ClientProxy,
+    @Inject('MARKETPLACE_READER')
+    private readonly marketplaceReaderClient: ClientProxy,
   ) {}
 
   @UseGuards(JwtAuthGuard)
@@ -29,7 +32,7 @@ export class ReviewController {
     const payload = { ...data, user_id };
     console.log(payload);
     const result = await firstValueFrom(
-      this.reviewServiceClient.send(
+      this.marketplaceWriterClient.send(
         { module: 'review', action: 'giveReview' },
         payload,
       ),
@@ -58,7 +61,7 @@ export class ReviewController {
     console.log('Editing review:', payload);
 
     const result = await firstValueFrom(
-      this.reviewServiceClient.send(
+      this.marketplaceWriterClient.send(
         { module: 'review', action: 'editReview' },
         payload,
       ),

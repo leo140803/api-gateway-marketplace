@@ -21,14 +21,17 @@ import { firstValueFrom } from 'rxjs';
 @Controller('/api/user')
 export class AuthController {
   constructor(
-    @Inject('MARKETPLACE') private readonly userServiceClient: ClientProxy,
+    @Inject('MARKETPLACE_WRITER')
+    private readonly marketplaceWriterClient: ClientProxy,
+    @Inject('MARKETPLACE_READER')
+    private readonly marketplaceReaderClient: ClientProxy,
   ) {}
 
   // Endpoint to send OTP to user's email
   @Post('/send-otp')
   async sendOtp(@Body() body: { email: string }): Promise<any> {
     const result = await firstValueFrom(
-      this.userServiceClient.send(
+      this.marketplaceWriterClient.send(
         { module: 'user', action: 'sendOtp' },
         { email: body.email },
       ),
@@ -54,7 +57,7 @@ export class AuthController {
     @Body() body: { email: string; otp: string },
   ): Promise<any> {
     const result = await firstValueFrom(
-      this.userServiceClient.send(
+      this.marketplaceWriterClient.send(
         { module: 'user', action: 'validateOtp' },
         { email: body.email, otp: body.otp },
       ),
@@ -86,7 +89,7 @@ export class AuthController {
     },
   ): Promise<any> {
     const result = await firstValueFrom(
-      this.userServiceClient.send(
+      this.marketplaceWriterClient.send(
         { module: 'user', action: 'changePasswordWithOtpAndOldPassword' },
         {
           email: body.email,
@@ -115,7 +118,10 @@ export class AuthController {
   async getAllUsers(): Promise<any> {
     console.log('masuk sini!');
     const result = await firstValueFrom(
-      this.userServiceClient.send({ module: 'user', action: 'getAll' }, {}),
+      this.marketplaceReaderClient.send(
+        { module: 'user', action: 'getAll' },
+        {},
+      ),
     );
     if (!result.success) {
       throw new HttpException(
@@ -134,7 +140,7 @@ export class AuthController {
   @Put('/soft-delete/:id')
   async softDeleteUser(@Param('id') id: string): Promise<any> {
     const result = await firstValueFrom(
-      this.userServiceClient.send(
+      this.marketplaceWriterClient.send(
         { module: 'user', action: 'softDelete' },
         { id },
       ),
@@ -157,7 +163,7 @@ export class AuthController {
     @Body() body: { name?: string; phone?: string; is_verified?: boolean },
   ): Promise<any> {
     const result = await firstValueFrom(
-      this.userServiceClient.send(
+      this.marketplaceWriterClient.send(
         { module: 'user', action: 'updateByAdmin' },
         { userId: id, ...body },
       ),
@@ -177,7 +183,7 @@ export class AuthController {
   @Post('/add-by-admin')
   async addUserByAdmin(@Body() body: any): Promise<any> {
     const result = await firstValueFrom(
-      this.userServiceClient.send(
+      this.marketplaceWriterClient.send(
         { module: 'user', action: 'addByAdmin' },
         body,
       ),
@@ -200,7 +206,7 @@ export class AuthController {
     @Body() body: { name?: string; phone?: string },
   ): Promise<any> {
     const result = await firstValueFrom(
-      this.userServiceClient.send(
+      this.marketplaceWriterClient.send(
         { module: 'user', action: 'edit' },
         { id, ...body },
       ),
@@ -221,7 +227,10 @@ export class AuthController {
   async register(@Body() data: any): Promise<any> {
     console.log(data);
     const result = await firstValueFrom(
-      this.userServiceClient.send({ module: 'user', action: 'register' }, data),
+      this.marketplaceWriterClient.send(
+        { module: 'user', action: 'register' },
+        data,
+      ),
     );
     if (!result.success) {
       throw new HttpException(
@@ -244,7 +253,7 @@ export class AuthController {
     @Res() res,
   ) {
     const result = await firstValueFrom(
-      this.userServiceClient.send(
+      this.marketplaceReaderClient.send(
         { module: 'user', action: 'verify' },
         { token },
       ),
@@ -279,7 +288,10 @@ export class AuthController {
   @Post('/login')
   async login(@Body() body: any): Promise<any> {
     const result = await firstValueFrom(
-      this.userServiceClient.send({ module: 'user', action: 'login' }, body),
+      this.marketplaceWriterClient.send(
+        { module: 'user', action: 'login' },
+        body,
+      ),
     );
     if (!result.success) {
       throw new HttpException(
@@ -303,7 +315,7 @@ export class AuthController {
   ): Promise<any> {
     const userId = req.user.user_id; // Dari JwtAuthGuard
     const result = await firstValueFrom(
-      this.userServiceClient.send(
+      this.marketplaceWriterClient.send(
         { module: 'user', action: 'addDeviceToken' },
         { userId, deviceToken: body.deviceToken },
       ),
@@ -326,7 +338,7 @@ export class AuthController {
     const userId = req.user.user_id;
     console.log(userId);
     const result = await firstValueFrom(
-      this.userServiceClient.send(
+      this.marketplaceReaderClient.send(
         { module: 'user', action: 'findById' },
         { userId },
       ),
@@ -353,7 +365,7 @@ export class AuthController {
     const userId = req.user.user_id; // Ambil userId dari JWT Guard
 
     const result = await firstValueFrom(
-      this.userServiceClient.send(
+      this.marketplaceWriterClient.send(
         { module: 'user', action: 'updateDetails' },
         { userId, ...body },
       ),
@@ -372,7 +384,7 @@ export class AuthController {
   @Post('/forgot-password')
   async requestPasswordReset(@Body() body: { email: string }): Promise<any> {
     const result = await firstValueFrom(
-      this.userServiceClient.send(
+      this.marketplaceWriterClient.send(
         { module: 'user', action: 'requestPasswordReset' },
         { email: body.email },
       ),
@@ -435,7 +447,7 @@ export class AuthController {
     @Body() body: { token: string; newPassword: string },
   ): Promise<any> {
     const result = await firstValueFrom(
-      this.userServiceClient.send(
+      this.marketplaceWriterClient.send(
         { module: 'user', action: 'resetPassword' },
         body,
       ),
@@ -464,7 +476,7 @@ export class AuthController {
     const userId = req.user.user_id; // Ambil userId dari JWT Guard
 
     const result = await firstValueFrom(
-      this.userServiceClient.send(
+      this.marketplaceWriterClient.send(
         { module: 'user', action: 'changePassword' },
         { userId, ...body },
       ),
