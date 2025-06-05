@@ -22,7 +22,6 @@ WORKDIR /app
 # Copy only the built app and necessary files
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/prisma ./prisma
 
 # Install only production dependencies
 RUN npm install --production
@@ -31,7 +30,3 @@ RUN npm install --production
 RUN npm install ts-node --save-dev
 RUN npm install --save-dev @types/bcrypt
 RUN npm install --save-dev @types/amqplib
-
-# Copy Prisma Client
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
