@@ -69,6 +69,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @MessageBody() data: { userId: string; storeId: string },
     @ConnectedSocket() client: ChatSocket,
   ) {
+    console.log('join chat');
     const roomName = `chat_${data.userId}_${data.storeId}`;
     client.join(roomName);
     client.emit('joined_chat', { room: roomName });
