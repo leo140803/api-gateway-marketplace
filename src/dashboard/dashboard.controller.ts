@@ -9,9 +9,15 @@ export class DashboardController {
   ) {}
 
   @Get()
-  async getReport(): Promise<any> {
+  async getReport(
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
+  ): Promise<any> {
     return this.marketplaceWriterClient
-      .send({ module: 'dashboard', action: 'getReportData' }, {})
+      .send(
+        { module: 'dashboard', action: 'getReportData' },
+        { startDate, endDate },
+      )
       .toPromise();
   }
 
