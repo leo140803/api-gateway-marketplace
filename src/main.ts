@@ -19,8 +19,8 @@ async function bootstrap() {
   app.use(bodyParser.urlencoded({ extended: true }));
 
   // Serve static files
-  app.useStaticAssets(join(process.cwd(), '/uploads'), {
-    prefix: '/uploads/', // Define the route prefix for accessing assets
+  app.useStaticAssets(join(__dirname, '..', 'uploads'), {
+    prefix: '/uploads/',
   });
 
   // Enable CORS
