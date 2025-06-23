@@ -12,8 +12,7 @@ import { SharedModule } from 'src/shared/shared.module';
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
-        secret:
-          configService.get<string>('JWT_SECRET') || 'marketplace-logamas',
+        secret: process.env.JWT_SECRET_KEY || 'marketplace-logamas',
         signOptions: { expiresIn: '30d' },
       }),
       inject: [ConfigService],

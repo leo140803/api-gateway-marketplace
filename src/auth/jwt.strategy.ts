@@ -14,7 +14,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: 'marketplace-logamas',
+      secretOrKey: process.env.JWT_SECRET_KEY || 'marketplace-logamas',
     });
   }
 
