@@ -491,4 +491,33 @@ export class AuthController {
 
     return result;
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('/verify-password')
+  async verifyPassword(
+    @Req() req: any,
+    @Body() body: { password: string },
+  ): Promise<any> {
+    const userId = req.user.user_id;
+
+    const result = await firstValueFrom(
+      this.marketplaceReaderClient.send(
+        { module: 'user', action: 'verifyPassword' },
+        { userId, password: body.password },
+      ),
+    );
+
+    if (!result.success) {
+      throw new HttpException(
+        result.message || 'Password verification failed',
+        result.statusCode || HttpStatus.UNAUTHORIZED,
+      );
+    }
+
+    return {
+      message: 'Password verified successfully',
+      success: true,
+      statusCode: 200,
+    };
+  }
 }
