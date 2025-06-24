@@ -128,6 +128,32 @@ export class ProductController {
     return result;
   }
 
+  @Get('search-by-store')
+  async searchProductsByStore(
+    @Query('q') query: string,
+    @Query('storeId') storeId: string,
+  ): Promise<any> {
+    if (!query || !storeId) {
+      throw new HttpException('Query and storeId are required', 400);
+    }
+
+    const result = await firstValueFrom(
+      this.marketplaceReaderClient.send(
+        { module: 'product', action: 'searchProductsByStore' },
+        { query, storeId },
+      ),
+    );
+
+    if (!result.success) {
+      throw new HttpException(
+        result.message || 'Internal Server Error',
+        result.statusCode || 500,
+      );
+    }
+
+    return result;
+  }
+
   @Get(':id')
   async getProductById(@Param('id') id: string): Promise<any> {
     const result = await firstValueFrom(
